@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Informe de Digitalización de Trámites</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+:root{
+  --bg:#f4f6fa;
+  --card:#ffffff;
+
+  --primary:#4e2a84;
+  --primary-soft:#ede7f8;
+
+  --secondary:#f26b1f;
+  --secondary-soft:#fff1e7;
+
+  --success:#2f9e44;
+  --warning:#d97706;
+  --danger:#d9485f;
+  --info:#7c4dff;
+
+  --text:#1f2937;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+
+  --shadow:0 10px 30px rgba(17,24,39,.06);
+  --radius:22px;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:var(--bg);
+  font-family:'Inter',sans-serif;
+  color:var(--text);
+  padding:40px;
+}
+
+.container{
+  max-width:1500px;
+  margin:auto;
+}
+
+.top{
+  margin-bottom:32px;
+}
+
+.top h1{
+  font-size:38px;
+  font-weight:800;
+  color:var(--primary);
+  letter-spacing:-1px;
+}
+
+.top p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:15px;
+}
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:24px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  border:1px solid rgba(229,231,235,.8);
+  padding:24px;
+  position:relative;
+  overflow:hidden;
+}
+
+.card-title{
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:20px;
+}
+
+.big{
+  grid-column:span 6;
+}
+
+.medium{
+  grid-column:span 4;
+}
+
+.small{
+  grid-column:span 3;
+}
+
+.full{
+  grid-column:span 12;
+}
+
+@media(max-width:1200px){
+  .big,
+  .medium,
+  .small{
+    grid-column:span 12;
+  }
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:30px;
+}
+
+@media(max-width:900px){
+  .metrics{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px){
+  .metrics{
+    grid-template-columns:1fr;
+  }
+}
+
+.metric{
+  background:linear-gradient(180deg,#fff,#fafafa);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  position:relative;
+}
+
+.metric::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:4px;
+  background:var(--primary);
+}
+
+.metric.orange::after{
+  background:var(--secondary);
+}
+
+.metric.green::after{
+  background:var(--success);
+}
+
+.metric.red::after{
+  background:var(--danger);
+}
+
+.metric-label{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  margin-bottom:14px;
+  font-weight:700;
+}
+
+.metric-value{
+  font-size:42px;
+  font-weight:800;
+  color:var(--primary);
+  line-height:1;
+}
+
+.metric-sub{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.progress-wrap{
+  margin-top:16px;
+}
+
+.progress{
+  width:100%;
+  height:10px;
+  border-radius:999px;
+  background:#eceff4;
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  border-radius:999px;
+}
+
+.pb1{ width:84%; background:var(--primary); }
+.pb2{ width:59%; background:var(--secondary); }
+.pb3{ width:19%; background:var(--success); }
+.pb4{ width:21%; background:var(--danger); }
+
+.chart-container{
+  position:relative;
+  height:360px;
+}
+
+.chart-small{
+  height:300px;
+}
+
+.two-cols{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+@media(max-width:900px){
+  .two-cols{
+    grid-template-columns:1fr;
+  }
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:900px;
+}
+
+thead{
+  background:var(--primary);
+  color:#fff;
+}
+
+th{
+  padding:16px;
+  text-align:left;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+td{
+  padding:16px;
+  border-bottom:1px solid var(--border);
+  font-size:14px;
+}
+
+tbody tr:hover{
+  background:#faf8ff;
+}
+
+.badge{
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  display:inline-block;
+}
+
+.b-orange{
+  background:var(--secondary-soft);
+  color:var(--secondary);
+}
+
+.b-green{
+  background:#eaf7ee;
+  color:var(--success);
+}
+
+.b-red{
+  background:#ffe8ec;
+  color:var(--danger);
+}
+
+.b-purple{
+  background:var(--primary-soft);
+  color:var(--primary);
+}
+
+.section-title{
+  font-size:24px;
+  font-weight:800;
+  color:var(--primary);
+  margin-bottom:22px;
+  letter-spacing:-.5px;
+}
+
+.rank-list{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.rank-item{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.rank-num{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.rank-content{
+  flex:1;
+}
+
+.rank-header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+
+.rank-name{
+  font-weight:700;
+}
+
+.rank-value{
+  font-weight:700;
+  color:var(--primary);
+}
+
+.rank-bar{
+  width:100%;
+  height:10px;
+  background:#edf0f5;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.rank-fill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--primary),var(--info));
+}
+
+.circle-progress{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:
+  conic-gradient(var(--primary) 0 84%, #eceff4 84% 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:auto;
+}
+
+.circle-progress.orange{
+  background:
+  conic-gradient(var(--secondary) 0 59%, #eceff4 59% 100%);
+}
+
+.circle-progress.green{
+  background:
+  conic-gradient(var(--success) 0 19%, #eceff4 19% 100%);
+}
+
+.circle-progress.red{
+  background:
+  conic-gradient(var(--danger) 0 21%, #eceff4 21% 100%);
+}
+
+.circle-inner{
+  width:92px;
+  height:92px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.circle-inner strong{
+  font-size:28px;
+  color:var(--primary);
+}
+
+.circle-inner span{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.state-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px;
+}
+
+@media(max-width:1000px){
+  .state-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px){
+  .state-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="top">
+    <h1>Informe de Digitalización de Trámites</h1>
+    <p>Sistema de Atención Virtual — Provincia de Santa Fe</p>
+  </div>
+
+  <div class="metrics">
+
+    <div class="metric">
+      <div class="metric-label">Solicitudes Totales</div>
+      <div class="metric-value">94</div>
+
+      <div class="progress-wrap">
+        <div class="progress">
+          <div class="progress-bar pb1"></div>
+        </div>
+      </div>
+
+      <div class="metric-sub">
+        Total consolidado de trámites registrados.
+      </div>
+    </div>
+
+    <div class="metric orange">
+      <div class="metric-label">Expedientes Electrónicos</div>
+      <div class="metric-value">79</div>
+
+      <div class="progress-wrap">
+        <div class="progress">
+          <div class="progress-bar pb2"></div>
+        </div>
+      </div>
+
+      <div class="metric-sub">
+        84% de formalización documental.
+      </div>
+    </div>
+
+    <div class="metric green">
+      <div class="metric-label">Completados</div>
+      <div class="metric-value">18</div>
+
+      <div class="progress-wrap">
+        <div class="progress">
+          <div class="progress-bar pb3"></div>
+        </div>
+      </div>
+
+      <div class="metric-sub">
+        Solicitudes digitalizadas correctamente.
+      </div>
+    </div>
+
+    <div class="metric red">
+      <div class="metric-label">Bloqueadas</div>
+      <div class="metric-value">20</div>
+
+      <div class="progress-wrap">
+        <div class="progress">
+          <div class="progress-bar pb4"></div>
+        </div>
+      </div>
+
+      <div class="metric-sub">
+        EE devueltos + falta de información.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dashboard-grid">
+
+    <div class="card big">
+      <div class="card-title">Distribución de Solicitudes por Estado</div>
+      <div class="chart-container">
+        <canvas id="estadoChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card medium">
+      <div class="card-title">EE Generados vs Sin EE</div>
+      <div class="chart-small">
+        <canvas id="eeChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card medium">
+      <div class="card-title">Estado General del Sistema</div>
+
+      <div class="state-grid">
+
+        <div>
+          <div class="circle-progress">
+            <div class="circle-inner">
+              <strong>84%</strong>
+              <span>EE</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="circle-progress orange">
+            <div class="circle-inner">
+              <strong>59%</strong>
+              <span>Activos</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="circle-progress green">
+            <div class="circle-inner">
+              <strong>19%</strong>
+              <span>Completado</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="circle-progress red">
+            <div class="circle-inner">
+              <strong>21%</strong>
+              <span>Bloqueado</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card big">
+      <div class="card-title">Solicitudes por Ministerio</div>
+      <div class="chart-container">
+        <canvas id="ministerioChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card medium">
+      <div class="card-title">Ranking de Ministerios</div>
+
+      <div class="rank-list">
+
+        <div class="rank-item">
+          <div class="rank-num">1</div>
+          <div class="rank-content">
+            <div class="rank-header">
+              <span class="rank-name">Desarrollo Productivo</span>
+              <span class="rank-value">70</span>
+            </div>
+            <div class="rank-bar">
+              <div class="rank-fill" style="width:100%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rank-item">
+          <div class="rank-num">2</div>
+          <div class="rank-content">
+            <div class="rank-header">
+              <span class="rank-name">Trabajo</span>
+              <span class="rank-value">3</span>
+            </div>
+            <div class="rank-bar">
+              <div class="rank-fill" style="width:5%"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card full">
+      <div class="card-title">Estado por Ministerio</div>
+      <div class="chart-container">
+        <canvas id="stackedChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="section-title">Matriz Ministerio × Estado</div>
+
+      <div class="table-wrap">
+        <table>
+
+          <thead>
+            <tr>
+              <th>Ministerio</th>
+              <th>Pendiente</th>
+              <th>Proceso AV</th>
+              <th>Completado</th>
+              <th>EE Devuelto</th>
+              <th>Falta Info</th>
+              <th>Proceso Dig.</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td><strong>Desarrollo Productivo</strong></td>
+              <td><span class="badge b-orange">32</span></td>
+              <td><span class="badge b-purple">6</span></td>
+              <td><span class="badge b-green">17</span></td>
+              <td><span class="badge b-red">11</span></td>
+              <td><span class="badge b-orange">3</span></td>
+              <td><span class="badge b-purple">1</span></td>
+              <td><strong>70</strong></td>
+            </tr>
+
+            <tr>
+              <td><strong>Trabajo</strong></td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td><span class="badge b-orange">1</span></td>
+              <td><span class="badge b-purple">2</span></td>
+              <td><strong>3</strong></td>
+            </tr>
+
+            <tr>
+              <td><strong>Educación</strong></td>
+              <td>-</td>
+              <td>-</td>
+              <td><span class="badge b-green">1</span></td>
+              <td>-</td>
+              <td><span class="badge b-orange">2</span></td>
+              <td>-</td>
+              <td><strong>3</strong></td>
+            </tr>
+
+            <tr>
+              <td><strong>Economía</strong></td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td><span class="badge b-orange">2</span></td>
+              <td>-</td>
+              <td><strong>2</strong></td>
+            </tr>
+
+          </tbody>
+
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+Chart.defaults.font.family = 'Inter';
+Chart.defaults.color = '#6b7280';
+
+new Chart(document.getElementById('estadoChart'), {
+  type: 'doughnut',
+  data: {
+    labels: [
+      'Pendiente',
+      'Proceso AV',
+      'Completado',
+      'EE Devuelto',
+      'Falta Información',
+      'Proceso Digitalización'
+    ],
+    datasets: [{
+      data: [32,21,18,11,9,3],
+      backgroundColor: [
+        '#f26b1f',
+        '#7c4dff',
+        '#2f9e44',
+        '#d9485f',
+        '#d97706',
+        '#4e2a84'
+      ],
+      borderWidth:0
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{
+        position:'bottom'
+      }
+    },
+    cutout:'65%'
+  }
+});
+
+new Chart(document.getElementById('eeChart'), {
+  type:'pie',
+  data:{
+    labels:['Con EE','Sin EE'],
+    datasets:[{
+      data:[79,15],
+      backgroundColor:[
+        '#4e2a84',
+        '#f26b1f'
+      ],
+      borderWidth:0
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{
+        position:'bottom'
+      }
+    }
+  }
+});
+
+new Chart(document.getElementById('ministerioChart'), {
+  type:'bar',
+  data:{
+    labels:[
+      'Desarrollo Productivo',
+      'Trabajo',
+      'Educación',
+      'Economía',
+      'Obras Públicas'
+    ],
+    datasets:[{
+      label:'Solicitudes',
+      data:[70,3,3,2,1],
+      backgroundColor:'#4e2a84',
+      borderRadius:8
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    indexAxis:'y',
+    scales:{
+      x:{
+        beginAtZero:true,
+        grid:{
+          color:'#eef2f7'
+        }
+      },
+      y:{
+        grid:{
+          display:false
+        }
+      }
+    },
+    plugins:{
+      legend:{
+        display:false
+      }
+    }
+  }
+});
+
+new Chart(document.getElementById('stackedChart'), {
+  type:'bar',
+  data:{
+    labels:[
+      'Desarrollo Productivo',
+      'Trabajo',
+      'Educación',
+      'Economía'
+    ],
+    datasets:[
+      {
+        label:'Pendiente',
+        data:[32,0,0,0],
+        backgroundColor:'#f26b1f'
+      },
+      {
+        label:'Proceso AV',
+        data:[6,0,0,0],
+        backgroundColor:'#7c4dff'
+      },
+      {
+        label:'Completado',
+        data:[17,0,1,0],
+        backgroundColor:'#2f9e44'
+      },
+      {
+        label:'EE Devuelto',
+        data:[11,0,0,0],
+        backgroundColor:'#d9485f'
+      },
+      {
+        label:'Falta Info',
+        data:[3,1,2,2],
+        backgroundColor:'#d97706'
+      },
+      {
+        label:'Proceso Dig.',
+        data:[1,2,0,0],
+        backgroundColor:'#4e2a84'
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    interaction:{
+      mode:'index',
+      intersect:false
+    },
+    scales:{
+      x:{
+        stacked:true,
+        grid:{
+          display:false
+        }
+      },
+      y:{
+        stacked:true,
+        beginAtZero:true,
+        grid:{
+          color:'#eef2f7'
+        }
+      }
+    }
+  }
+});
+
+</script>
+
+</body>
+</html>
